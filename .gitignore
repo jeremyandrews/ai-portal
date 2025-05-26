@@ -33,4 +33,3 @@ web/sites/*/services.local.yml
 # Composer
 vendor/
 web/
-.ddev/docker-compose.override.yaml
