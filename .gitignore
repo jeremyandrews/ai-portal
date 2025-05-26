@@ -1,0 +1,36 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Logs
+*.log
+logs/
+
+# Node modules (if any)
+node_modules/
+
+# Drupal specific
+web/sites/*/files/
+web/sites/*/private/
+web/sites/*/settings.local.php
+web/sites/*/services.local.yml
+
+# Composer
+vendor/
+web/
+.ddev/docker-compose.override.yaml
