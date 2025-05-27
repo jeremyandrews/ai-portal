@@ -11,9 +11,6 @@ database:
     version: "10.11"
 use_dns_when_possible: true
 composer_version: "2"
-web_environment:
-  - OPENAI_API_KEY=${OPENAI_API_KEY}
-  - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
 corepack_enable: true
 
 # Key features of DDEV's config.yaml:
@@ -236,8 +233,8 @@ corepack_enable: true
 #  https_port: 4000
 #  http_port: 3999
 # Allows a set of extra ports to be exposed via ddev-router
-# Fill in all three fields even if you don’t intend to use the https_port!
-# If you don’t add https_port, then it defaults to 0 and ddev-router will fail to start.
+# Fill in all three fields even if you don't intend to use the https_port!
+# If you don't add https_port, then it defaults to 0 and ddev-router will fail to start.
 #
 # The port behavior on the ddev-webserver must be arranged separately, for example
 # using web_extra_daemons.

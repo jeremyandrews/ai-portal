@@ -1,0 +1,36 @@
+# Cline Project Intelligence for Drupal 11 AI Portal
+
+## Critical Workflow Rules
+
+### Memory Bank Updates
+- **ALWAYS update memory bank after making significant changes**
+- Update activeContext.md with current work status
+- Update progress.md with completed/resolved items
+- This ensures continuity across sessions
+
+### DDEV Environment Variable Handling
+- **NEVER put secrets in tracked files** (docker-compose.override.yaml, config.yaml)
+- **Use `.ddev/.env` for environment variables** - automatically gitignored
+- **Provide `.ddev/.env.example`** for documentation
+- **Test with diagnostic scripts** before assuming variables work
+
+### API Key Configuration Pattern
+1. Create `.ddev/.env` with actual values
+2. Create `.ddev/.env.example` with placeholder values  
+3. Remove old `web_environment` configurations
+4. Remove conflicting docker-compose override files
+5. Restart DDEV to apply changes
+6. Test with: `ddev exec php -r "echo getenv('OPENAI_API_KEY') ? 'FOUND' : 'NOT FOUND';"`
+7. Verify Drupal access: `ddev drush eval "echo \Drupal::service('key.repository')->getKey('openai_api_key')->getKeyValue();"`
+
+### Drupal Development Patterns
+- Test modules thoroughly with PHPUnit before deployment
+- Use proper Drupal 8+ patterns (services, dependency injection)
+- Clear caches after configuration changes
+- Verify permissions for new functionality
+
+### Security Practices
+- Environment variables for secrets (API keys, database credentials)
+- Use Drupal's Key module for API key management
+- Follow principle of least privilege for permissions
+- Never commit secrets to version control
