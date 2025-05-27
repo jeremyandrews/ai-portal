@@ -29,6 +29,12 @@
 - Clear caches after configuration changes
 - Verify permissions for new functionality
 
+### Views Filter Patterns
+- **Issue**: `user_current` filter plugin may not work properly in custom views
+- **Solution**: Use contextual filters (arguments) with `user_uid` plugin
+- **Configuration**: Set default argument type to `current_user`
+- **Testing**: Always test views in proper user context (not via drush)
+
 ### Security Practices
 - Environment variables for secrets (API keys, database credentials)
 - Use Drupal's Key module for API key management

@@ -34,9 +34,17 @@ ai_conversation.branch_thread:
 
 # Settings
 ai_conversation.settings:
-  path: '/admin/config/ai/conversation'
+  path: '/admin/config/ai/ai-conversation'
   defaults:
     _form: '\Drupal\ai_conversation\Form\AiConversationSettingsForm'
     _title: 'AI Conversation Settings'
+  requirements:
+    _permission: 'administer ai conversations'
+
+ai_conversation.diagnose:
+  path: '/admin/config/ai/ai-conversation/diagnose'
+  defaults:
+    _controller: '\Drupal\ai_conversation\Controller\AiConversationDiagnosticController::diagnose'
+    _title: 'AI Conversation Diagnostic'
   requirements:
     _permission: 'administer ai conversations'

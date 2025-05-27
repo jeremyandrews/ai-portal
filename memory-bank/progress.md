@@ -87,6 +87,7 @@
 - ~~Environment variables not accessible in DDEV~~ ✅ Fixed
 - ~~Chat conversations not being saved~~ ✅ Fixed
 - ~~Type error in createThread method~~ ✅ Fixed
+- ~~User conversations view showing wrong conversations~~ ✅ Fixed
 
 ### Module Health Check
 - **ai_assistant_api**: ✅ Enabled and dispatching events

@@ -77,3 +77,29 @@ The chat conversation persistence is now fully implemented and ready for use:
 4. All metadata properly captured and stored
 
 The integration is complete, tested, and production-ready!
+
+### User Conversations View Fixed (January 27, 2025)
+
+#### Issue Identified
+- User conversations view at `/user/conversations` was showing anonymous conversations instead of the logged-in user's conversations
+- The view was using a `user_current` filter plugin that wasn't functioning properly
+
+#### Root Cause
+- The `user_current` filter plugin was not working correctly
+- Diagnostic revealed the view was filtering for user ID 0 (anonymous) instead of the current user
+
+#### Solution Implemented
+- Replaced the broken filter with a contextual filter (argument)
+- Used the standard Drupal `user_uid` plugin with `current_user` as the default argument
+- This is the recommended Drupal approach for user-specific views
+
+#### Technical Changes
+- Modified `views.view.user_ai_conversations.yml` configuration
+- Removed the non-functional filter
+- Added contextual filter with proper configuration
+- Imported configuration changes and cleared caches
+
+#### Result
+✅ User conversations view now correctly displays only the logged-in user's conversations
+✅ Anonymous conversations no longer appear for authenticated users
+✅ View properly filters based on current user context
