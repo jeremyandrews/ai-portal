@@ -12,8 +12,8 @@ database:
 use_dns_when_possible: true
 composer_version: "2"
 web_environment:
-  - OPENAI_API_KEY
-  - ANTHROPIC_API_KEY
+  - OPENAI_API_KEY=${OPENAI_API_KEY}
+  - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
 corepack_enable: true
 
 # Key features of DDEV's config.yaml:
