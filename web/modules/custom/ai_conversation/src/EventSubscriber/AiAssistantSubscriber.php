@@ -121,10 +121,10 @@ class AiAssistantSubscriber implements EventSubscriberInterface {
         $activeConversation = $session->get('ai_conversation_active');
         if (isset($activeConversation['conversation_id']) && isset($activeConversation['thread_id'])) {
           // Verify the conversation still exists.
-          $existingConversation = $this->conversationManager->loadConversation($activeConversation['conversation_id']);
+          $existingConversation = $this->conversationManager->loadConversation((int) $activeConversation['conversation_id']);
           if ($existingConversation) {
-            $conversationId = $activeConversation['conversation_id'];
-            $threadId = $activeConversation['thread_id'];
+            $conversationId = (int) $activeConversation['conversation_id'];
+            $threadId = (int) $activeConversation['thread_id'];
             $this->logger->info('Using existing conversation @id from session', [
               '@id' => $conversationId,
             ]);
