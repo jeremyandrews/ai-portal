@@ -17,21 +17,7 @@ class AiConversationViewsData extends EntityViewsData {
   public function getViewsData() {
     $data = parent::getViewsData();
 
-    // Ensure all base fields are properly exposed
-    $data['ai_conversation']['table']['base'] = [
-      'field' => 'id',
-      'title' => $this->t('AI Conversation'),
-      'help' => $this->t('AI Conversation entities containing conversation metadata.'),
-      'weight' => -10,
-    ];
-
-    // Ensure the ID field is properly defined
-    $data['ai_conversation']['id']['field']['id'] = 'field';
-    $data['ai_conversation']['id']['sort']['id'] = 'standard';
-    $data['ai_conversation']['id']['filter']['id'] = 'numeric';
-    $data['ai_conversation']['id']['argument']['id'] = 'numeric';
-
-    // User relationship
+    // Add user relationship
     $data['ai_conversation']['user_id']['relationship'] = [
       'base' => 'users_field_data',
       'base field' => 'uid',
@@ -61,44 +47,29 @@ class AiConversationViewsData extends EntityViewsData {
     ];
 
     // Relationship to threads
-    $data['ai_conversation']['id']['relationship'] = [
+    $data['ai_conversation']['ai_conversation_thread'] = [
       'title' => $this->t('Threads'),
       'help' => $this->t('All threads belonging to this conversation.'),
-      'base' => 'ai_conversation_thread',
-      'base field' => 'conversation_id',
-      'relationship' => 'standard',
-      'id' => 'standard',
-      'label' => $this->t('Conversation threads'),
+      'relationship' => [
+        'base' => 'ai_conversation_thread',
+        'base field' => 'conversation_id',
+        'field' => 'id',
+        'id' => 'standard',
+        'label' => $this->t('Conversation threads'),
+      ],
     ];
 
     // Default thread relationship
-    $data['ai_conversation']['default_thread_id']['relationship'] = [
-      'title' => $this->t('Default thread'),
-      'help' => $this->t('The default/active thread for this conversation.'),
-      'base' => 'ai_conversation_thread',
-      'base field' => 'id',
-      'relationship' => 'standard',
-      'id' => 'standard',
-      'label' => $this->t('Default thread'),
-    ];
-
-    // Title field enhancements
-    $data['ai_conversation']['title']['field']['id'] = 'field';
-    $data['ai_conversation']['title']['field']['click sortable'] = TRUE;
-    $data['ai_conversation']['title']['sort']['id'] = 'standard';
-    $data['ai_conversation']['title']['filter']['id'] = 'string';
-    $data['ai_conversation']['title']['filter']['title'] = $this->t('Conversation title');
-    $data['ai_conversation']['title']['filter']['help'] = $this->t('Filter by conversation title.');
-    $data['ai_conversation']['title']['argument']['id'] = 'string';
-
-    // Created/Changed timestamp fields
-    $data['ai_conversation']['created']['field']['id'] = 'date';
-    $data['ai_conversation']['created']['sort']['id'] = 'date';
-    $data['ai_conversation']['created']['filter']['id'] = 'date';
-
-    $data['ai_conversation']['changed']['field']['id'] = 'date';
-    $data['ai_conversation']['changed']['sort']['id'] = 'date';
-    $data['ai_conversation']['changed']['filter']['id'] = 'date';
+    if (isset($data['ai_conversation']['default_thread_id'])) {
+      $data['ai_conversation']['default_thread_id']['relationship'] = [
+        'title' => $this->t('Default thread'),
+        'help' => $this->t('The default/active thread for this conversation.'),
+        'base' => 'ai_conversation_thread',
+        'base field' => 'id',
+        'id' => 'standard',
+        'label' => $this->t('Default thread'),
+      ];
+    }
 
     // Operations links
     $data['ai_conversation']['operations'] = [
