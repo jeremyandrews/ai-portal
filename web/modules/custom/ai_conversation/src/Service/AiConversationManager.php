@@ -64,6 +64,20 @@ class AiConversationManager {
   }
 
   /**
+   * Loads a conversation by ID.
+   *
+   * @param int $conversation_id
+   *   The conversation ID.
+   *
+   * @return \Drupal\ai_conversation\AiConversationInterface|null
+   *   The conversation entity or NULL if not found.
+   */
+  public function loadConversation(int $conversation_id): ?AiConversationInterface {
+    $conversation = $this->entityTypeManager->getStorage('ai_conversation')->load($conversation_id);
+    return $conversation instanceof AiConversationInterface ? $conversation : NULL;
+  }
+
+  /**
    * Creates a new conversation with an initial thread.
    *
    * @param string $title

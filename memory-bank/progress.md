@@ -88,6 +88,7 @@
 - ~~Chat conversations not being saved~~ ✅ Fixed
 - ~~Type error in createThread method~~ ✅ Fixed
 - ~~User conversations view showing wrong conversations~~ ✅ Fixed
+- ~~Conversation duplication - new conversation for each message~~ ✅ Fixed
 
 ### Module Health Check
 - **ai_assistant_api**: ✅ Enabled and dispatching events

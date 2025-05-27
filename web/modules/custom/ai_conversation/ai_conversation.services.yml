@@ -5,7 +5,7 @@ services:
 
   ai_conversation.event_subscriber:
     class: Drupal\ai_conversation\EventSubscriber\AiAssistantSubscriber
-    arguments: ['@ai_conversation.manager', '@current_user', '@logger.channel.ai_conversation']
+    arguments: ['@ai_conversation.manager', '@current_user', '@logger.channel.ai_conversation', '@request_stack']
     tags:
       - { name: event_subscriber }
 

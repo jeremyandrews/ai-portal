@@ -1,42 +1,31 @@
 # Active Context
 
-## Current Status: Chat Conversation Persistence FULLY FUNCTIONAL ✅
+## Current Status: Conversation Duplication Issue FIXED ✅
 
 ### Recent Work (January 27, 2025)
 
-#### Late Afternoon Session - Chat Conversation Persistence
-**COMPLETED**: Full integration between chat interface and conversation storage
+#### Conversation Duplication Issue - RESOLVED
+**Issue**: Each chat message was creating a new conversation instead of continuing the existing one
+- Going to `/user/conversations` showed multiple conversations for the same chat session
+- Root cause: `AiAssistantSubscriber` was creating a new conversation for every message
 
-1. **Initial Issue Identified**: 
-   - Chat at `/chat` was working but conversations weren't being saved
-   - No event integration existed between AI module and conversation storage
+**Solution Implemented**:
+1. **Session-based conversation tracking** added to `AiAssistantSubscriber`
+   - Checks for active conversation in session before creating new one
+   - Stores conversation ID and thread ID in session key `ai_conversation_active`
+   - Reuses existing conversation for subsequent messages in same session
 
-2. **Solution Implemented**:
-   - Updated `AiAssistantSubscriber` to listen to AI module events:
-     - `PreGenerateResponseEvent` - captures user messages
-     - `PostGenerateResponseEvent` - captures AI responses
-   - Fixed service definitions with proper dependencies
-   - Implemented conversation creation and message storage logic
+2. **Code changes**:
+   - Added `RequestStack` dependency to access session
+   - Added `loadConversation` method to `AiConversationManager`
+   - Updated service definition with new `request_stack` argument
+   - Modified `onPreGenerateResponse` to check session first
 
-3. **Type Error Fixed**:
-   - **Error**: `createThread()` expected int but received string for conversation ID
-   - **Fix**: Added type cast `(int) $conversation->id()` in `AiConversationManager`
-   - Cache cleared and integration now fully functional
-
-4. **Technical Implementation**:
-   - Event subscriber properly registered and verified
-   - Conversation entities created automatically during chat
-   - User messages and AI responses stored with metadata
-   - Provider, model, temperature, and configuration captured
-   - Type safety ensured throughout the integration
-
-5. **Verification Completed**:
-   ```
-   ✅ Event: ai.pre_generate_response has our listener
-   ✅ Event: ai.post_generate_response has our listener
-   ✅ Services properly configured and available
-   ✅ Type error resolved - chat persistence working
-   ```
+3. **Behavior**:
+   - First message in a new session creates a conversation
+   - All subsequent messages use the same conversation
+   - Session stores: conversation_id, thread_id, and started timestamp
+   - Conversations properly group all messages from a chat session
 
 ### Module Status
 The AI Conversation module is FULLY FUNCTIONAL:
@@ -50,11 +39,13 @@ The AI Conversation module is FULLY FUNCTIONAL:
 - ✅ Dynamic form with AJAX
 - ✅ Template rendering
 - ✅ OpenAI API key properly accessible
-- ✅ **Chat conversations automatically persisted**
-- ✅ **Type safety issues resolved**
+- ✅ Chat conversations automatically persisted
+- ✅ Type safety issues resolved
+- ✅ **Conversation duplication issue fixed**
 
 ### Important Implementation Details
-- Event integration uses request thread ID to link pre/post events
+- Session-based conversation tracking prevents duplication
+- Each chat session maintains one conversation throughout
 - Conversations titled based on first user message
 - Thread messages stored as JSON with full metadata
 - Handles both string and array input formats from AI module
@@ -63,18 +54,21 @@ The AI Conversation module is FULLY FUNCTIONAL:
 
 ### Current Working State
 - Chat interface at `/chat` works perfectly
-- **Conversations automatically saved during chat** ✅
+- **One conversation per chat session** ✅
+- Conversations automatically saved during chat
 - Saved conversations visible at `/admin/content/ai-conversations`
+- User conversations at `/user/conversations` show properly grouped chats
 - Full conversation history with user/assistant messages preserved
 - Complete metadata captured (provider, model, timestamps, etc.)
 - All type errors resolved - system fully operational
 
 ### Ready for Production Testing
 The chat conversation persistence is now fully implemented and ready for use:
-1. Chat at `/chat` - conversations save automatically
+1. Chat at `/chat` - one conversation per session
 2. View at `/admin/content/ai-conversations`
-3. Click conversations to see full message history
-4. All metadata properly captured and stored
+3. User view at `/user/conversations` - no more duplicates
+4. Click conversations to see full message history
+5. All metadata properly captured and stored
 
 The integration is complete, tested, and production-ready!
 
@@ -103,3 +97,4 @@ The integration is complete, tested, and production-ready!
 ✅ User conversations view now correctly displays only the logged-in user's conversations
 ✅ Anonymous conversations no longer appear for authenticated users
 ✅ View properly filters based on current user context
+✅ Conversations no longer duplicated - each session maintains one conversation
