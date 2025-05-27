@@ -2,9 +2,13 @@ services:
   ai_conversation.manager:
     class: Drupal\ai_conversation\Service\AiConversationManager
     arguments: ['@entity_type.manager', '@current_user', '@uuid', '@datetime.time']
-  
-  ai_conversation.assistant_subscriber:
+
+  ai_conversation.event_subscriber:
     class: Drupal\ai_conversation\EventSubscriber\AiAssistantSubscriber
-    arguments: ['@ai_conversation.manager']
+    arguments: ['@ai_conversation.manager', '@current_user', '@logger.channel.ai_conversation']
     tags:
       - { name: event_subscriber }
+
+  logger.channel.ai_conversation:
+    parent: logger.channel_base
+    arguments: ['ai_conversation']

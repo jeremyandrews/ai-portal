@@ -87,10 +87,10 @@ class AiConversationManager {
     $conversation->save();
 
     // Create the initial thread.
-    $thread = $this->createThread($conversation->id(), $initial_message);
+    $thread = $this->createThread((int) $conversation->id(), $initial_message);
     
     // Set this as the default thread.
-    $conversation->setDefaultThreadId($thread->id());
+    $conversation->setDefaultThreadId((int) $thread->id());
     $conversation->save();
 
     return $conversation;
