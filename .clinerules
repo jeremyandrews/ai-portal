@@ -40,3 +40,14 @@
 - Use Drupal's Key module for API key management
 - Follow principle of least privilege for permissions
 - Never commit secrets to version control
+
+### Type Safety in Drupal Entities
+- **Common Issue**: Drupal stores entity field values as strings in the database
+- **PHP Strict Types Issue**: Methods with return type declarations expect specific types
+- **Solution Pattern**: Always cast field values to expected types in getter methods
+- **Examples**:
+  - `getCreatedTime(): int` → use `return (int) $this->get('created')->value;`
+  - `getDefaultThreadId(): ?int` → use `return $value ? (int) $value : NULL;`
+  - `getTemperature(): float` → use `return (float) ($this->get('temperature')->value ?? 0.7);`
+- **Prevention**: When creating entity getters, always consider type casting
+- **Testing**: Enable strict types (`declare(strict_types=1);`) to catch issues early

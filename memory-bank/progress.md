@@ -89,6 +89,7 @@
 - ~~Type error in createThread method~~ ✅ Fixed
 - ~~User conversations view showing wrong conversations~~ ✅ Fixed
 - ~~Conversation duplication - new conversation for each message~~ ✅ Fixed
+- ~~Conversation detail view only showing metadata~~ ✅ Fixed
 
 ### Module Health Check
 - **ai_assistant_api**: ✅ Enabled and dispatching events

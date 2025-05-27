@@ -223,19 +223,81 @@ class AiAssistantSubscriber implements EventSubscriberInterface {
       $conversationInfo = $this->conversationMap[$requestThreadId];
       $threadId = $conversationInfo['thread_id'];
 
-      // Extract the AI response.
+      // Extract the AI response with enhanced logging.
       $output = $event->getOutput();
       $message = '';
       
-      if (is_object($output) && method_exists($output, 'getNormalized')) {
-        $normalized = $output->getNormalized();
-        if (is_array($normalized) && isset($normalized[0]['text'])) {
-          $message = $normalized[0]['text'];
-        } elseif (is_string($normalized)) {
-          $message = $normalized;
-        }
-      } elseif (is_string($output)) {
+      // Log the output type for debugging.
+      $this->logger->debug('AI Response output type: @type, class: @class', [
+        '@type' => gettype($output),
+        '@class' => is_object($output) ? get_class($output) : 'not_an_object',
+      ]);
+      
+      // Try multiple extraction methods.
+      $extractionAttempts = [];
+      
+      // Method 1: Direct string
+      if (is_string($output)) {
         $message = $output;
+        $extractionAttempts[] = 'direct_string';
+      }
+      // Method 2: ChatOutput object (expected from AI module)
+      elseif (is_object($output) && method_exists($output, 'getNormalized')) {
+        try {
+          $normalized = $output->getNormalized();
+          $extractionAttempts[] = 'getNormalized: ' . (is_object($normalized) ? get_class($normalized) : gettype($normalized));
+          
+          // Check if normalized is a ChatMessage object
+          if (is_object($normalized) && method_exists($normalized, 'getText')) {
+            $message = $normalized->getText();
+            $extractionAttempts[] = 'ChatMessage->getText()';
+          }
+          // Legacy array format
+          elseif (is_array($normalized) && isset($normalized[0]['text'])) {
+            $message = $normalized[0]['text'];
+            $extractionAttempts[] = 'normalized_array_text';
+          }
+          // Direct string
+          elseif (is_string($normalized)) {
+            $message = $normalized;
+            $extractionAttempts[] = 'normalized_string';
+          }
+        } catch (\Exception $e) {
+          $this->logger->error('getNormalized failed: @error', ['@error' => $e->getMessage()]);
+        }
+      }
+      // Method 3: Direct getText method
+      elseif (is_object($output) && method_exists($output, 'getText')) {
+        try {
+          $message = $output->getText();
+          $extractionAttempts[] = 'direct_getText';
+        } catch (\Exception $e) {
+          $this->logger->error('getText failed: @error', ['@error' => $e->getMessage()]);
+        }
+      }
+      // Method 4: __toString method
+      elseif (is_object($output) && method_exists($output, '__toString')) {
+        try {
+          $message = (string) $output;
+          $extractionAttempts[] = '__toString';
+        } catch (\Exception $e) {
+          $this->logger->error('__toString failed: @error', ['@error' => $e->getMessage()]);
+        }
+      }
+      
+      // Log extraction attempts and result.
+      $this->logger->info('AI Response extraction attempts: @attempts, message length: @length, preview: @preview', [
+        '@attempts' => implode(', ', $extractionAttempts),
+        '@length' => strlen($message),
+        '@preview' => substr($message, 0, 100),
+      ]);
+      
+      // If we still have no message, log available methods for debugging.
+      if (empty($message) && is_object($output)) {
+        $methods = get_class_methods($output);
+        $this->logger->warning('Failed to extract AI response. Available methods: @methods', [
+          '@methods' => implode(', ', array_slice($methods, 0, 10)),
+        ]);
       }
 
       // Add the AI response to the thread.
@@ -251,8 +313,9 @@ class AiAssistantSubscriber implements EventSubscriberInterface {
       // Clean up the mapping.
       unset($this->conversationMap[$requestThreadId]);
 
-      $this->logger->info('Added AI response to conversation @id', [
+      $this->logger->info('Added AI response to conversation @id (length: @length)', [
         '@id' => $conversationInfo['conversation_id'],
+        '@length' => strlen($message),
       ]);
     }
     catch (\Exception $e) {

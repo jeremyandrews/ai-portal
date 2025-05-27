@@ -151,7 +151,7 @@ final class AiConversationThread extends ContentEntityBase implements AiConversa
    * {@inheritdoc}
    */
   public function getCreatedTime(): int {
-    return $this->get('created')->value;
+    return (int) $this->get('created')->value;
   }
 
   /**

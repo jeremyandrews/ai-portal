@@ -62,11 +62,56 @@ function ai_conversation_theme() {
 function template_preprocess_ai_conversation(array &$variables) {
   // Fetch AiConversation Entity Object.
   $ai_conversation = $variables['elements']['#ai_conversation'];
+  $variables['ai_conversation'] = $ai_conversation;
 
   // Helpful $content variable for templates.
   foreach (\Drupal\Core\Render\Element::children($variables['elements']) as $key) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
+
+  // Load the default thread and its messages.
+  $variables['thread_messages'] = [];
+  $default_thread_id = $ai_conversation->getDefaultThreadId();
+  
+  if ($default_thread_id) {
+    $thread_storage = \Drupal::entityTypeManager()->getStorage('ai_conversation_thread');
+    $thread = $thread_storage->load($default_thread_id);
+    
+    if ($thread) {
+      $messages = $thread->getMessages();
+      
+      // Process messages for display.
+      foreach ($messages as &$message) {
+        // Ensure timestamp exists.
+        if (!isset($message['timestamp'])) {
+          $message['timestamp'] = $thread->getCreatedTime();
+        }
+        
+        // Format timestamp.
+        $message['formatted_time'] = \Drupal::service('date.formatter')->format(
+          $message['timestamp'],
+          'short'
+        );
+        
+        // Add CSS class for styling.
+        $message['css_class'] = $message['role'] === 'user' ? 'ai-message-user' : 'ai-message-assistant';
+      }
+      
+      $variables['thread_messages'] = $messages;
+    }
+  }
+  
+  // Add conversation metadata.
+  $variables['conversation_metadata'] = [
+    'model' => $ai_conversation->getModel(),
+    'provider' => $ai_conversation->getProvider(),
+    'temperature' => $ai_conversation->getTemperature(),
+    'max_tokens' => $ai_conversation->getMaxTokens(),
+    'created' => \Drupal::service('date.formatter')->format(
+      $ai_conversation->getCreatedTime(),
+      'medium'
+    ),
+  ];
 }
 
 /**
