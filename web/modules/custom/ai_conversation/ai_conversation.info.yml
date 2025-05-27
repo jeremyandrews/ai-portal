@@ -1,0 +1,9 @@
+name: AI Conversation
+type: module
+description: 'Provides persistent conversation storage for AI Assistant interactions with branching/threading support.'
+core_version_requirement: ^10 || ^11
+package: AI
+dependencies:
+  - drupal:user
+  - ai:ai
+  - ai:ai_assistant_api

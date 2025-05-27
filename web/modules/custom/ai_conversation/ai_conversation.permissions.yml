@@ -1,0 +1,54 @@
+# Base conversation permissions
+view own ai conversations:
+  title: 'View own AI conversations'
+  description: 'View your own AI conversation history'
+
+view any ai conversations:
+  title: 'View any AI conversations'
+  description: 'View all users AI conversation history'
+  restrict access: true
+
+create ai conversations:
+  title: 'Create AI conversations'
+  description: 'Start new AI conversations'
+
+edit own ai conversations:
+  title: 'Edit own AI conversations'
+  description: 'Edit your own AI conversations (rename, etc.)'
+
+edit any ai conversations:
+  title: 'Edit any AI conversations'
+  description: 'Edit any users AI conversations'
+  restrict access: true
+
+delete own ai conversations:
+  title: 'Delete own AI conversations'
+  description: 'Delete your own AI conversations'
+
+delete any ai conversations:
+  title: 'Delete any AI conversations'
+  description: 'Delete any users AI conversations'
+  restrict access: true
+
+# Thread/revision permissions
+create ai conversation threads:
+  title: 'Create AI conversation threads'
+  description: 'Branch conversations into new threads'
+
+view ai conversation threads:
+  title: 'View AI conversation threads'
+  description: 'View all branches/threads in conversations'
+
+edit ai conversation threads:
+  title: 'Edit AI conversation threads'
+  description: 'Edit conversation threads (rename, etc.)'
+
+delete ai conversation threads:
+  title: 'Delete AI conversation threads'
+  description: 'Delete specific conversation branches/threads'
+
+# Administration permission
+administer ai conversations:
+  title: 'Administer AI conversations'
+  description: 'Full administrative access to all AI conversations and settings'
+  restrict access: true

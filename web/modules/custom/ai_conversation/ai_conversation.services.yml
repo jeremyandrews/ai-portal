@@ -1,0 +1,10 @@
+services:
+  ai_conversation.manager:
+    class: Drupal\ai_conversation\Service\AiConversationManager
+    arguments: ['@entity_type.manager', '@current_user', '@uuid', '@datetime.time']
+  
+  ai_conversation.assistant_subscriber:
+    class: Drupal\ai_conversation\EventSubscriber\AiAssistantSubscriber
+    arguments: ['@ai_conversation.manager']
+    tags:
+      - { name: event_subscriber }

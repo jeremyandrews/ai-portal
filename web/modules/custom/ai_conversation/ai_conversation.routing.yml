@@ -1,0 +1,42 @@
+# Routes for AI conversation functionality
+
+# Resume conversation
+ai_conversation.resume:
+  path: '/user/conversations/{ai_conversation}/resume'
+  defaults:
+    _controller: '\Drupal\ai_conversation\Controller\AiConversationController::resume'
+    _title: 'Resume Conversation'
+  requirements:
+    _permission: 'view own ai conversations+edit own ai conversations'
+    ai_conversation: \d+
+
+# Resume specific thread
+ai_conversation.resume_thread:
+  path: '/user/conversations/{ai_conversation}/thread/{ai_conversation_thread}/resume'
+  defaults:
+    _controller: '\Drupal\ai_conversation\Controller\AiConversationController::resumeThread'
+    _title: 'Resume Thread'
+  requirements:
+    _permission: 'view own ai conversations+edit own ai conversations'
+    ai_conversation: \d+
+    ai_conversation_thread: \d+
+
+# Branch thread
+ai_conversation.branch_thread:
+  path: '/user/conversations/{ai_conversation}/thread/{ai_conversation_thread}/branch'
+  defaults:
+    _form: '\Drupal\ai_conversation\Form\BranchThreadForm'
+    _title: 'Branch Thread'
+  requirements:
+    _permission: 'create ai conversation threads'
+    ai_conversation: \d+
+    ai_conversation_thread: \d+
+
+# Settings
+ai_conversation.settings:
+  path: '/admin/config/ai/conversation'
+  defaults:
+    _form: '\Drupal\ai_conversation\Form\AiConversationSettingsForm'
+    _title: 'AI Conversation Settings'
+  requirements:
+    _permission: 'administer ai conversations'

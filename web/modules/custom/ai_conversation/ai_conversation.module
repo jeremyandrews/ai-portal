@@ -1,0 +1,90 @@
+<?php
+
+/**
+ * @file
+ * Contains ai_conversation.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function ai_conversation_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the ai_conversation module.
+    case 'help.page.ai_conversation':
+      $output = '';
+      $output .= '<h2>' . t('About') . '</h2>';
+      $output .= '<p>' . t('Provides persistent conversation storage for AI Assistant interactions with branching/threading support.') . '</p>';
+      $output .= '<h3>' . t('Features') . '</h3>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('Per-user conversation persistence') . '</li>';
+      $output .= '<li>' . t('Conversation branching and threading') . '</li>';
+      $output .= '<li>' . t('Support for switching AI models mid-conversation') . '</li>';
+      $output .= '<li>' . t('Conversation history and resume functionality') . '</li>';
+      $output .= '<li>' . t('Fine-grained permission control') . '</li>';
+      $output .= '</ul>';
+      $output .= '<h3>' . t('Configuration') . '</h3>';
+      $output .= '<p>' . t('Configure permissions at <a href=":permissions">People > Permissions</a>.', [
+        ':permissions' => \Drupal::url('user.admin_permissions'),
+      ]) . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ai_conversation_theme() {
+  return [
+    'ai_conversation' => [
+      'render element' => 'elements',
+    ],
+    'ai_conversation_thread' => [
+      'render element' => 'elements',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for AI conversation templates.
+ *
+ * Default template: ai-conversation.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the user information and any
+ *   - attributes: HTML attributes for the containing element.
+ */
+function template_preprocess_ai_conversation(array &$variables) {
+  // Fetch AiConversation Entity Object.
+  $ai_conversation = $variables['elements']['#ai_conversation'];
+
+  // Helpful $content variable for templates.
+  foreach (\Drupal\Core\Render\Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+}
+
+/**
+ * Prepares variables for AI conversation thread templates.
+ *
+ * Default template: ai-conversation-thread.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the user information and any
+ *   - attributes: HTML attributes for the containing element.
+ */
+function template_preprocess_ai_conversation_thread(array &$variables) {
+  // Fetch AiConversationThread Entity Object.
+  $ai_conversation_thread = $variables['elements']['#ai_conversation_thread'];
+
+  // Helpful $content variable for templates.
+  foreach (\Drupal\Core\Render\Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+}

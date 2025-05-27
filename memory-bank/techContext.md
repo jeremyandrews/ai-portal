@@ -53,9 +53,68 @@
 - **Composer Architecture**: All dependencies managed via Composer
 - **Plugin System**: Extensible provider architecture
 
-## Next Investigation Areas
-1. AI provider configuration interface
-2. Conversation persistence mechanisms
-3. User permission integration
-4. Block placement and theming
-5. API key management workflow
+## Custom AI Conversation Module (NEW)
+### Module Information
+- **Name**: ai_conversation
+- **Location**: web/modules/custom/ai_conversation/
+- **Version**: 1.0.0
+- **Dependencies**: Core AI modules, User module
+
+### Database Schema
+- **ai_conversation**: Main conversation entities
+  - id, uuid, title, user_id, default_thread_id, created, updated
+  - Indexes: user_id, created
+- **ai_conversation_thread**: Individual conversation threads  
+  - id, uuid, conversation_id, parent_thread_id, branch_point_message_id
+  - title, messages (LONGTEXT JSON), created, updated
+  - Indexes: conversation_id, parent_thread_id, created
+
+### Entity Architecture
+- **AiConversation**: ContentEntityBase with user ownership
+- **AiConversationThread**: ContentEntityBase with conversation relationship
+- **Interfaces**: AiConversationInterface, AiConversationThreadInterface
+- **Access Control**: Custom handlers with granular permissions
+- **List Builders**: Admin and user interfaces for entity management
+
+### Service Layer
+- **AiConversationManager**: Core service for conversation/thread operations
+  - Create, update, delete conversations and threads
+  - Branch thread creation with message copying
+  - Session context management for AI integration
+- **Event Integration**: AiAssistantSubscriber for AI interaction capture
+
+### Permission System (11 permissions)
+- **Conversations**: view own/any, create, edit own/any, delete own/any
+- **Threads**: view, create, edit, delete
+- **Admin**: administer ai conversations
+
+### Routes & Controllers
+- **User Interface**: /user/conversations
+- **Admin Interface**: /admin/content/ai-conversations
+- **Conversation Management**: Resume, branch, navigation
+- **API Endpoints**: REST-style operations for conversation management
+
+### Integration Points
+- **AI Assistant API**: Event subscriber hooks for message capture
+- **User System**: Per-user conversation isolation
+- **Session Management**: Load conversation context into chat sessions
+- **Provider Tracking**: Store AI model/provider metadata per message
+
+### Technical Features
+- **Message Structure**: JSON storage with full metadata and timestamps
+- **Branching Logic**: Copy conversation history up to branch point
+- **Thread Hierarchy**: Parent/child relationships for conversation trees
+- **Resume Functionality**: Load any conversation/thread into active session
+- **Search Support**: Framework for conversation search and filtering
+
+## Completed Implementation Areas ✅
+1. ✅ AI provider configuration interface
+2. ✅ Conversation persistence mechanisms (Custom module)
+3. ✅ User permission integration (11 granular permissions)
+4. ✅ Block placement and theming (DeepChat integration)
+5. ✅ API key management workflow (DDEV environment variables)
+6. ✅ Custom entity system for conversation storage
+7. ✅ Branching conversation thread support
+8. ✅ Service layer for conversation management
+9. ✅ Access control and user isolation
+10. ✅ Admin and user interfaces
