@@ -46,6 +46,13 @@ function ai_conversation_theme() {
     'ai_conversation_thread' => [
       'render element' => 'elements',
     ],
+    'ai_portal' => [
+      'variables' => [
+        'conversations' => [],
+        'active_conversation' => NULL,
+        'chat_form' => NULL,
+      ],
+    ],
   ];
 }
 

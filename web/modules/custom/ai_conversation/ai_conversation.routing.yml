@@ -48,3 +48,27 @@ ai_conversation.diagnose:
     _title: 'AI Conversation Diagnostic'
   requirements:
     _permission: 'administer ai conversations'
+
+# AI Portal routes
+ai_conversation.portal:
+  path: '/ai-portal'
+  defaults:
+    _controller: '\Drupal\ai_conversation\Controller\AiPortalController::portalPage'
+    _title: 'AI Portal'
+  requirements:
+    _permission: 'access ai chatbot'
+
+ai_conversation.portal.new:
+  path: '/ai-portal/new'
+  defaults:
+    _controller: '\Drupal\ai_conversation\Controller\AiPortalController::newConversation'
+  requirements:
+    _permission: 'access ai chatbot'
+
+ai_conversation.portal.load:
+  path: '/ai-portal/load/{conversation_id}'
+  defaults:
+    _controller: '\Drupal\ai_conversation\Controller\AiPortalController::loadConversation'
+  requirements:
+    _permission: 'access ai chatbot'
+    conversation_id: \d+

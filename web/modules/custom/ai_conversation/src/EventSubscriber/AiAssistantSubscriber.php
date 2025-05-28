@@ -6,6 +6,8 @@ namespace Drupal\ai_conversation\EventSubscriber;
 
 use Drupal\ai\Event\PostGenerateResponseEvent;
 use Drupal\ai\Event\PreGenerateResponseEvent;
+use Drupal\ai\OperationType\Chat\ChatInput;
+use Drupal\ai\OperationType\Chat\ChatMessage;
 use Drupal\ai_conversation\Service\AiConversationManager;
 use Drupal\Core\Session\AccountProxyInterface;
 use Psr\Log\LoggerInterface;
@@ -117,7 +119,26 @@ class AiAssistantSubscriber implements EventSubscriberInterface {
       $conversationId = null;
       $threadId = null;
       
-      if ($session && $session->has('ai_conversation_active')) {
+      // First check for portal mode (conversation_id in request).
+      $portalConversationId = $request ? $request->query->get('conversation') : null;
+      
+      if ($portalConversationId) {
+        // Portal mode - use specific conversation.
+        $conversation = $this->conversationManager->loadConversation((int) $portalConversationId);
+        
+        if ($conversation && $conversation->getOwnerId() == $this->currentUser->id()) {
+          $conversationId = (int) $conversation->id();
+          $threadId = (int) $conversation->getDefaultThreadId();
+          $this->logger->info('Using portal conversation @id', [
+            '@id' => $conversationId,
+          ]);
+        } else {
+          $this->logger->warning('Invalid portal conversation @id requested', [
+            '@id' => $portalConversationId,
+          ]);
+        }
+      } elseif ($session && $session->has('ai_conversation_active')) {
+        // Session mode - use session-based conversation.
         $activeConversation = $session->get('ai_conversation_active');
         if (isset($activeConversation['conversation_id']) && isset($activeConversation['thread_id'])) {
           // Verify the conversation still exists.
@@ -176,7 +197,38 @@ class AiAssistantSubscriber implements EventSubscriberInterface {
         'thread_id' => $threadId,
       ];
 
-      // Add the user message to the thread.
+      // Build conversation history for context.
+      $chatMessages = [];
+      
+      // Load existing messages from the thread.
+      if ($threadId) {
+        $thread = \Drupal::entityTypeManager()->getStorage('ai_conversation_thread')->load($threadId);
+        if ($thread) {
+          $existingMessages = $thread->getMessages();
+          foreach ($existingMessages as $existingMessage) {
+            if (isset($existingMessage['role']) && isset($existingMessage['content'])) {
+              $chatMessages[] = new ChatMessage(
+                $existingMessage['role'],
+                $existingMessage['content']
+              );
+            }
+          }
+        }
+      }
+      
+      // Add the current user message.
+      $chatMessages[] = new ChatMessage('user', $message);
+      
+      // Update the event input with full conversation history.
+      $chatInput = new ChatInput($chatMessages);
+      $event->setInput($chatInput);
+      
+      $this->logger->info('Updated input with @count messages for conversation @id', [
+        '@count' => count($chatMessages),
+        '@id' => $conversationId,
+      ]);
+      
+      // Add the user message to the thread for persistence.
       $this->conversationManager->addMessage(
         (int) $threadId,
         'user',
